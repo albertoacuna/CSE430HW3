@@ -34,8 +34,7 @@ pthread_t threadIDs[FCOUNT+MCOUNT];
 
 //Define semaphores, mutexes, etc here
 /* */
-sem_t male_semaphore;
-sem_t female_semaphore;
+sem_t rr_semaphore;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t full = PTHREAD_COND_INITIALIZER;
 
@@ -48,8 +47,7 @@ int main()
 
     //Initialize semaphores, mutexes etc here.
     /* */
-    sem_init(&male_semaphore, 0, RR_CAP);
-    sem_init(&female_semaphore, 0, RR_CAP);
+    sem_init(&rr_semaphore, 0, RR_CAP);
     pthread_mutex_init(&mutex, 0);
 
     srandom(time(NULL) % (unsigned int) RAND_MAX);
@@ -115,7 +113,7 @@ void woman_enter()
         pthread_cond_wait(&full, &mutex);
     }
     //  printf("%d\n", value);
-    sem_wait(&female_semaphore);
+    sem_wait(&rr_semaphore);
     ++femaleCount;
     pthread_mutex_unlock(&mutex);
     printf("Thread f%d got in!\n", id);
@@ -128,7 +126,7 @@ void woman_leave()
     //Exit code here
     /* */
     pthread_mutex_lock(&mutex);
-    sem_post(&female_semaphore);
+    sem_post(&rr_semaphore);
     --femaleCount;
     pthread_cond_broadcast(&full);
     pthread_mutex_unlock(&mutex);
@@ -146,7 +144,7 @@ void man_enter()
         pthread_cond_wait(&full, &mutex);
     }
     //  printf("%d\n", value);
-    sem_wait(&male_semaphore);
+    sem_wait(&rr_semaphore);
     ++maleCount;
     pthread_mutex_unlock(&mutex);
     printf("Thread m%d got in!\n", id);
@@ -159,7 +157,7 @@ void man_leave()
     //Exit code here
     /* */
     pthread_mutex_lock(&mutex);
-    sem_post(&male_semaphore);
+    sem_post(&rr_semaphore);
     --maleCount;
     pthread_cond_broadcast(&full);
     pthread_mutex_unlock(&mutex);
