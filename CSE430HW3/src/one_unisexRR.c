@@ -102,6 +102,9 @@ void *thread_mmain(void * arg)
 
 void woman_enter()
 {
+	clock_t start, stop;
+	double waittime;
+	start = clock();
     int id = get_simple_tid(pthread_self());
     //Man entry code here
     /* */
@@ -114,9 +117,12 @@ void woman_enter()
     }
     //  printf("%d\n", value);
     sem_wait(&rr_semaphore);
+    stop = clock();
+    waittime = (double) (stop-start)/CLOCKS_PER_SEC;
     ++femaleCount;
     pthread_mutex_unlock(&mutex);
     printf("Thread f%d got in!\n", id);
+    printf("Wait time for thread f%d was %f\n", id, waittime);
 }
 
 void woman_leave()
@@ -135,6 +141,9 @@ void woman_leave()
 
 void man_enter()
 {
+	clock_t start, stop;
+	double waittime;
+	start = clock();
     int id = get_simple_tid(pthread_self());
     //Man entry code here
     /* */
@@ -145,9 +154,13 @@ void man_enter()
     }
     //  printf("%d\n", value);
     sem_wait(&rr_semaphore);
+    stop = clock();
+    waittime = (double) (stop-start)/CLOCKS_PER_SEC;
     ++maleCount;
     pthread_mutex_unlock(&mutex);
     printf("Thread m%d got in!\n", id);
+    printf("Wait time for thread m%d was %f\n", id, waittime);
+
 }
 
 void man_leave()
